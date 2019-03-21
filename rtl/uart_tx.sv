@@ -42,20 +42,21 @@ module uart_tx
 
    localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
    localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;
+   localparam LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH);
    localparam HALF_PULSE_WIDTH = PULSE_WIDTH / 2;
 
-   typedef enum logic [3:0] {STT_DATA,
+   typedef enum logic [1:0] {STT_DATA,
                              STT_STOP,
                              STT_WAIT
                              } statetype;
 
    statetype                 state;
 
-   logic [DATA_WIDTH-1:0]    data_r;
-   logic                     uart_out_r;
-   logic                     ready_r;
-   logic [LB_DATA_WIDTH-1:0] data_cnt;
-   logic [31:0]              clk_cnt;
+   logic [DATA_WIDTH-1:0]     data_r;
+   logic                      uart_out_r;
+   logic                      ready_r;
+   logic [LB_DATA_WIDTH-1:0]  data_cnt;
+   logic [LB_PULSE_WIDTH-1:0] clk_cnt;
 
    always_ff @(posedge clk) begin
       if(!rstn) begin
