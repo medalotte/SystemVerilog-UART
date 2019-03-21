@@ -25,7 +25,7 @@
 timeunit 1ns;
 timeprecision 1ns;
 
-   module uart_rx_tb();
+module uart_rx_tb();
    localparam DATA_WIDTH = 8;
    localparam BAUD_RATE  = 115200;
    localparam CLK_FREQ   = 100_000_000;
@@ -35,7 +35,6 @@ timeprecision 1ns;
 
    //-----------------------------------------------------------------------------
    // clock generater
-   // 100MHz
    localparam CLK_PERIOD = 1_000_000_000 / CLK_FREQ;
 
    initial begin

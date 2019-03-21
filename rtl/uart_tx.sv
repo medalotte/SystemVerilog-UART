@@ -25,7 +25,7 @@
 module uart_tx
   #(parameter
     /*
-     You can designate under three parameters.
+     You can specify the following three parameters.
      1. DATA_WIDTH : width of data that is transmited by this module
      2. BAUD_RATE  : baud rate of output uart signal
      3. CLK_FREQ   : freqency of input clock signal
