@@ -33,12 +33,12 @@ module uart_tx
     DATA_WIDTH = 8,
     BAUD_RATE  = 115200,
     CLK_FREQ   = 100_000_000)
-   (input  logic [DATA_WIDTH-1:0] data,
-    input  logic valid,
-    input  logic clk,
-    input  logic rstn,
-    output logic uart_out,
-    output logic ready);
+   (output logic                  uart_out,
+    input  logic [DATA_WIDTH-1:0] data,
+    input  logic                  valid,
+    output logic                  ready,
+    input  logic                  clk,
+    input  logic                  rstn);
 
    localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
    localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;

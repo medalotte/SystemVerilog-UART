@@ -30,15 +30,15 @@ module uart_rx
      2. BAUD_RATE  : baud rate of output uart signal
      3. CLK_FREQ   : freqency of input clock signal
     */
-    DATA_WIDTH    = 8,
-    BAUD_RATE     = 115200,
-    CLK_FREQ      = 100_000_000)
+    DATA_WIDTH = 8,
+    BAUD_RATE  = 115200,
+    CLK_FREQ   = 100_000_000)
    (input  logic                  uart_in,
+    output logic [DATA_WIDTH-1:0] data,
+    output logic                  valid,
     input  logic                  ready,
     input  logic                  clk,
-    input  logic                  rstn,
-    output logic [DATA_WIDTH-1:0] data,
-    output logic                  valid);
+    input  logic                  rstn);
 
    localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
    localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;
