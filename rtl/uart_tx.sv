@@ -30,9 +30,9 @@ module uart_tx
      2. BAUD_RATE  : baud rate of output uart signal
      3. CLK_FREQ   : freqency of input clock signal
     */
-    DATA_WIDTH    = 8,
-    BAUD_RATE     = 115200,
-    CLK_FREQ      = 100_000_000)
+    DATA_WIDTH = 8,
+    BAUD_RATE  = 115200,
+    CLK_FREQ   = 100_000_000)
    (input  logic [DATA_WIDTH-1:0] data,
     input  logic valid,
     input  logic clk,
@@ -40,8 +40,8 @@ module uart_tx
     output logic uart_out,
     output logic ready);
 
-   localparam LB_DATA_WIDTH = $clog2(DATA_WIDTH);
-   localparam PULSE_WIDTH   = CLK_FREQ / BAUD_RATE;
+   localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
+   localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;
    localparam HALF_PULSE_WIDTH = PULSE_WIDTH / 2;
 
    typedef enum logic [3:0] {STT_DATA,
@@ -104,7 +104,7 @@ module uart_tx
               else begin
                  state      <= STT_WAIT;
                  uart_out_r <= 1;
-                 clk_cnt    <= PULSE_WIDTH;
+                 clk_cnt    <= PULSE_WIDTH + HALF_PULSE_WIDTH;
               end
            end
 
