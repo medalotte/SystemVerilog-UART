@@ -188,7 +188,7 @@ module uart_rx
          valid_r <= 1;
          data_r  <= data_tmp_r;
       end
-      else if(valid_r && !ready) begin
+      else if(valid_r && ready) begin
          valid_r <= 0;
       end
    end
