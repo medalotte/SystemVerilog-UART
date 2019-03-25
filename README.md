@@ -1,5 +1,5 @@
 # SystemVerilog-UART
-Discription of UART transmitter and receiver by using SystemVerilog
+Description of UART transmitter and receiver by using SystemVerilog
 
 ## Feature
 - You can freely specify the parameters that are baud rate, clock frequency and data width
