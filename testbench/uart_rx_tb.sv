@@ -67,7 +67,7 @@ module uart_rx_tb();
 
    initial begin
       #0    in    = 1;
-      #0    ready = 1;
+      #0    ready = 0;
       #0    rstn  = 0;
 
       #100  rstn  = 1;
@@ -91,14 +91,17 @@ module uart_rx_tb();
             success = 0;
          end
 
-         ready = 0;
-         repeat(PULSE_WIDTH / 2) @(posedge clk);
-
-         data  = data + 1;
+         repeat($urandom_range(PULSE_WIDTH/2, PULSE_WIDTH)) @(posedge clk);
          ready = 1;
+
+         repeat(1) @(posedge clk);
+         ready = 0;
 
          if(data == 8'b1111_1111) begin
             end_flag = 1;
+         end
+         else begin
+            data = data + 1;
          end
       end
 
