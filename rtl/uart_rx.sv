@@ -70,7 +70,7 @@ module uart_rx
    endfunction
 
    //-----------------------------------------------------------------------------
-   // discription about input signal
+   // description about input signal
    logic [1:0] sampling_cnt;
    logic [4:0] uart_in_q;
    logic       uart_in_r;
@@ -93,7 +93,7 @@ module uart_rx
    end
 
    //----------------------------------------------------------------
-   // discription about receive UART signal
+   // description about receive UART signal
    typedef enum logic [1:0] {STT_DATA,
                              STT_STOP,
                              STT_WAIT
@@ -175,7 +175,7 @@ module uart_rx
    assign rx_done = (state == STT_STOP) && (clk_cnt == 0);
 
    //-----------------------------------------------------------------------------
-   // discription about output signal
+   // description about output signal
    logic [DATA_WIDTH-1:0] data_r;
    logic                  valid_r;
 
