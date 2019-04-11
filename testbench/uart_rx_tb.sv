@@ -25,13 +25,15 @@
 timeunit 1ns;
 timeprecision 1ns;
 
+`include "../rtl/if/uart_if.sv"
+
 module uart_rx_tb();
    localparam DATA_WIDTH = 8;
    localparam BAUD_RATE  = 115200;
    localparam CLK_FREQ   = 100_000_000;
 
-   logic in, ready, clk, rstn, valid;
-   logic [7:0] out;
+   uart_if #(DATA_WIDTH) rxif();
+   logic clk, rstn;
 
    //-----------------------------------------------------------------------------
    // clock generater
@@ -47,12 +49,9 @@ module uart_rx_tb();
 
    //-----------------------------------------------------------------------------
    // DUT
-   uart_rx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ) dut(.uart_in (in),
-                                                  .ready   (ready),
-                                                  .clk     (clk),
-                                                  .rstn    (rstn),
-                                                  .data    (out),
-                                                  .valid   (valid));
+   uart_rx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ) dut(.rxif(rxif),
+                                                  .clk(clk),
+                                                  .rstn(rstn));
 
    //-----------------------------------------------------------------------------
    // test scenario
@@ -66,36 +65,36 @@ module uart_rx_tb();
    int                    index    = 0;
 
    initial begin
-      #0    in    = 1;
-      #0    ready = 0;
-      #0    rstn  = 0;
+      #0    rxif.sig   = 1;
+      #0    rxif.ready = 0;
+      #0    rstn       = 0;
 
-      #100  rstn  = 1;
+      #100  rstn       = 1;
 
       while(!end_flag) begin
 
          for(index = -1; index <= DATA_WIDTH; index++) begin
             case(index)
-              -1:         in = 0;
-              DATA_WIDTH: in = 1;
-              default:    in = data[index];
+              -1:         rxif.sig = 0;
+              DATA_WIDTH: rxif.sig = 1;
+              default:    rxif.sig = data[index];
             endcase
 
             repeat(PULSE_WIDTH) @(posedge clk);
          end
 
-         while(!valid) @(posedge clk);
+         while(!rxif.valid) @(posedge clk);
 
-         $display("input : ", data, ", result :", out);
-         if(data != out) begin
+         $display("input : ", data, ", result :", rxif.data);
+         if(data != rxif.data) begin
             success = 0;
          end
 
          repeat($urandom_range(PULSE_WIDTH/2, PULSE_WIDTH)) @(posedge clk);
-         ready = 1;
+         rxif.ready = 1;
 
          repeat(1) @(posedge clk);
-         ready = 0;
+         rxif.ready = 0;
 
          if(data == 8'b1111_1111) begin
             end_flag = 1;
