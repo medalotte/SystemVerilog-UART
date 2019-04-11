@@ -25,7 +25,7 @@
 interface uart_if
   #(parameter
     DATA_WIDTH = 8);
-   
+
    logic                  sig;
    logic [DATA_WIDTH-1:0] data;
    logic                  valid;
