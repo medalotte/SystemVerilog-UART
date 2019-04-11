@@ -32,18 +32,19 @@ module uart_rx
     */
     DATA_WIDTH = 8,
     BAUD_RATE  = 115200,
-    CLK_FREQ   = 100_000_000)
+    CLK_FREQ   = 100_000_000,
+
+    localparam
+    LB_DATA_WIDTH    = $clog2(DATA_WIDTH),
+    PULSE_WIDTH      = CLK_FREQ / BAUD_RATE,
+    LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH),
+    HALF_PULSE_WIDTH = PULSE_WIDTH / 2)
    (input  logic                  uart_in,
     output logic [DATA_WIDTH-1:0] data,
     output logic                  valid,
     input  logic                  ready,
     input  logic                  clk,
     input  logic                  rstn);
-
-   localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
-   localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;
-   localparam LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH);
-   localparam HALF_PULSE_WIDTH = PULSE_WIDTH / 2;
 
    //-----------------------------------------------------------------------------
    // noise removing filter

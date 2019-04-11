@@ -32,18 +32,19 @@ module uart_tx
     */
     DATA_WIDTH = 8,
     BAUD_RATE  = 115200,
-    CLK_FREQ   = 100_000_000)
+    CLK_FREQ   = 100_000_000,
+
+    localparam
+    LB_DATA_WIDTH    = $clog2(DATA_WIDTH),
+    PULSE_WIDTH      = CLK_FREQ / BAUD_RATE,
+    LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH),
+    HALF_PULSE_WIDTH = PULSE_WIDTH / 2)
    (output logic                  uart_out,
     input  logic [DATA_WIDTH-1:0] data,
     input  logic                  valid,
     output logic                  ready,
     input  logic                  clk,
     input  logic                  rstn);
-
-   localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH);
-   localparam PULSE_WIDTH      = CLK_FREQ / BAUD_RATE;
-   localparam LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH);
-   localparam HALF_PULSE_WIDTH = PULSE_WIDTH / 2;
 
    typedef enum logic [1:0] {STT_DATA,
                              STT_STOP,
