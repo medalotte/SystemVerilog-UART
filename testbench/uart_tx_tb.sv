@@ -25,13 +25,15 @@
 timeunit 1ns;
 timeprecision 1ns;
 
+`include "../rtl/if/uart_if.sv"
+
 module uart_tx_tb();
    localparam DATA_WIDTH = 8;
    localparam BAUD_RATE  = 115200;
    localparam CLK_FREQ   = 100_000_000;
 
-   logic [DATA_WIDTH-1:0] in;
-   logic clk, rstn, valid, out, ready;
+   uart_if #(DATA_WIDTH) txif();
+   logic                 clk, rstn;
 
    //-----------------------------------------------------------------------------
    // clock generater
@@ -47,12 +49,9 @@ module uart_tx_tb();
 
    //-----------------------------------------------------------------------------
    // DUT connection
-   uart_tx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ) dut(.data     (in),
-                                                  .valid    (valid),
-                                                  .clk      (clk),
-                                                  .rstn     (rstn),
-                                                  .uart_out (out),
-                                                  .ready    (ready));
+   uart_tx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ) dut(.txif(txif),
+                                                  .clk(clk),
+                                                  .rstn(rstn));
 
    //-----------------------------------------------------------------------------
    // test scenario
@@ -75,18 +74,18 @@ module uart_tx_tb();
       while(!end_flag) begin
 
          while(!ready) @(posedge clk);
-         in    = data;
-         valid = 1;
+         txif.data  = data;
+         txif.valid = 1;
 
          while(ready)  @(posedge clk);
-         valid = 0;
+         txif.valid = 0;
 
          repeat(PULSE_WIDTH / 2) @(posedge clk);
          for(index = -1; index <= DATA_WIDTH; index++) begin
             case(index)
-              -1:         if(out != 0)           success = 0;
-              DATA_WIDTH: if(out != 1)           success = 0;
-              default:    if(out != data[index]) success = 0;
+              -1:         if(txif.sig != 0)           success = 0;
+              DATA_WIDTH: if(txif.sig != 1)           success = 0;
+              default:    if(txif.sig != data[index]) success = 0;
             endcase
 
             repeat(PULSE_WIDTH) @(posedge clk);
