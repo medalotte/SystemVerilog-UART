@@ -22,6 +22,8 @@
  THE SOFTWARE.
 */
 
+`include "if/uart_if.sv"
+
 module uart_rx
   #(parameter
     /*
@@ -39,12 +41,9 @@ module uart_rx
     PULSE_WIDTH      = CLK_FREQ / BAUD_RATE,
     LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH),
     HALF_PULSE_WIDTH = PULSE_WIDTH / 2)
-   (input  logic                  uart_in,
-    output logic [DATA_WIDTH-1:0] data,
-    output logic                  valid,
-    input  logic                  ready,
-    input  logic                  clk,
-    input  logic                  rstn);
+   (uart_if.rx  rxif,
+    input logic clk,
+    input logic rstn);
 
    //-----------------------------------------------------------------------------
    // noise removing filter
@@ -73,22 +72,22 @@ module uart_rx
    //-----------------------------------------------------------------------------
    // description about input signal
    logic [1:0] sampling_cnt;
-   logic [4:0] uart_in_q;
-   logic       uart_in_r;
+   logic [4:0] sig_q;
+   logic       sig_r;
 
    always_ff @(posedge clk) begin
       if(!rstn) begin
          sampling_cnt <= 0;
-         uart_in_q    <= 5'b11111;
-         uart_in_r    <= 1;
+         sig_q        <= 5'b11111;
+         sig_r        <= 1;
       end
       else begin
          // connect to deserializer after removing noise
          if(sampling_cnt == 0) begin
-            uart_in_q <= {uart_in, uart_in_q[4:1]};
+            sig_q <= {rxif.sig, sig_q[4:1]};
          end
 
-         uart_in_r    <= majority5(uart_in_q);
+         sig_r        <= majority5(sig_q);
          sampling_cnt <= sampling_cnt + 1;
       end
    end
@@ -129,7 +128,7 @@ module uart_rx
                  clk_cnt <= clk_cnt - 1;
               end
               else begin
-                 data_tmp_r <= {uart_in_r, data_tmp_r[DATA_WIDTH-1:1]};
+                 data_tmp_r <= {sig_r, data_tmp_r[DATA_WIDTH-1:1]};
                  clk_cnt    <= PULSE_WIDTH;
 
                  if(data_cnt == DATA_WIDTH - 1) begin
@@ -149,7 +148,7 @@ module uart_rx
               if(0 < clk_cnt) begin
                  clk_cnt <= clk_cnt - 1;
               end
-              else if(uart_in_r) begin
+              else if(sig_r) begin
                  state <= STT_WAIT;
               end
            end
@@ -159,7 +158,7 @@ module uart_rx
            // behavior   : watch start bit
            // next state : when start bit is observed -> STT_DATA
            STT_WAIT: begin
-              if(uart_in_r == 0) begin
+              if(sig_r == 0) begin
                  clk_cnt  <= PULSE_WIDTH + HALF_PULSE_WIDTH;
                  data_cnt <= 0;
                  state    <= STT_DATA;
@@ -189,12 +188,12 @@ module uart_rx
          valid_r <= 1;
          data_r  <= data_tmp_r;
       end
-      else if(valid_r && ready) begin
+      else if(valid_r && rxif.ready) begin
          valid_r <= 0;
       end
    end
 
-   assign data  = data_r;
-   assign valid = valid_r;
+   assign rxif.data  = data_r;
+   assign rxif.valid = valid_r;
 
 endmodule
