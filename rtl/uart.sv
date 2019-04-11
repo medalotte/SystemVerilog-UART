@@ -22,6 +22,8 @@
  THE SOFTWARE.
 */
 
+`include "if/uart_if.sv"
+
 module uart
   #(parameter
     /*
@@ -33,30 +35,18 @@ module uart
     DATA_WIDTH = 8,
     BAUD_RATE  = 115200,
     CLK_FREQ   = 100_000_000)
-   (input  logic                  rxd,
-    output logic                  txd,
-    input  logic [DATA_WIDTH-1:0] tx_data,
-    input  logic                  tx_valid,
-    output logic                  tx_ready,
-    output logic [DATA_WIDTH-1:0] rx_data,
-    output logic                  rx_valid,
-    input  logic                  rx_ready,
-    input  logic                  clk,
-    input  logic                  rstn);
+   (uart_if.rx   rxif,
+    uart_if.tx   txif,
+    input logic  clk,
+    input logic  rstn);
 
    uart_tx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ)
-   uart_tx_inst(.data(tx_data),
-                .valid(tx_valid),
+   uart_tx_inst(.rxif(rxif),
                 .clk(clk),
-                .rstn(rstn),
-                .uart_out(txd),
-                .ready(tx_ready));
+                .rstn(rstn));
 
    uart_rx #(DATA_WIDTH, BAUD_RATE, CLK_FREQ)
-   uart_rx_inst(.uart_in(rxd),
-                .ready(rx_ready),
+   uart_rx_inst(.txif(txif),
                 .clk(clk),
-                .rstn(rstn),
-                .data(rx_data),
-                .valid(rx_valid));
+                .rstn(rstn));
 endmodule
