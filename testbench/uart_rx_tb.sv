@@ -43,7 +43,7 @@ module uart_rx_tb();
       clk = 1'b0;
    end
 
-   always #(CLK_PERIOD / 2) begin
+   always_ff #(CLK_PERIOD / 2) begin
       clk = ~clk;
    end
 
@@ -65,11 +65,12 @@ module uart_rx_tb();
    int                    index    = 0;
 
    initial begin
-      #0    rxif.sig   = 1;
-      #0    rxif.ready = 0;
-      #0    rstn       = 0;
+      rxif.sig   = 1;
+      rxif.ready = 0;
+      rstn       = 0;
 
-      #100  rstn       = 1;
+      repeat(100) @(posedge clk);
+      rstn       = 1;
 
       while(!end_flag) begin
 
